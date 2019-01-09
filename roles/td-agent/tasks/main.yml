@@ -1,0 +1,74 @@
+---
+# tasks file for td-agent
+  - name: Increase Max of File Descriptors
+    blockinfile:
+      block: "{{ lookup('file', '../files/limits.conf') }}"
+      dest: /etc/security/limits.conf
+      owner: root
+      group: root
+    tags: limits
+
+  - name: Optimize Network Kernel Parameters
+    blockinfile:
+      block: "{{ lookup('file', '../files/sysctl.conf') }}"
+      dest: /etc/sysctl.conf
+      create: yes
+      owner: root
+      group: root
+    tags: limits
+
+  - name: Copy td.repo
+    vars:
+      td_agent_version: 3
+    template:
+      src: ../template/td.repo.j2
+      dest: /etc/yum.repos.d/
+    tags: install
+
+  - name: Install td-agent from rpm Repo
+    yum:
+      name: td-agent
+      enablerepo: treasuredata
+    tags: install
+
+#ignore changed because fluent-plugin-kinesis gem always installed and changed
+  - name: Install firehose plugin
+    gem:
+      executable: /usr/sbin/td-agent-gem
+      name: fluent-plugin-kinesis
+    changed_when: false
+
+  - name: Copy td-agent.conf
+    template:
+      src: ../templates/td-agent.conf.j2
+      dest: /etc/td-agent/td-agent.conf
+    tags: install
+  
+  - name: mkdir /path/to/poth_file_dir
+    file: 
+      dest: /var/log/td-agent/css
+      state: directory
+    tags: install
+  
+  - name: touch /path/to/pos_file
+    vars:
+      pos_file:
+        - error_log.pos
+        - journal_log.pos
+        - console_log.pos
+        - access_log.pos
+    copy:
+      content: ""
+      dest: /var/log/td-agent/{{ item }}
+      owner: td-agent
+      group: td-agent
+      mode: 0644
+      force: no
+    with_items: "{{ pos_file }}"
+    tags: install
+
+  - name: Start td-agent
+    service: 
+      name: td-agent
+      state: started
+    tags: install

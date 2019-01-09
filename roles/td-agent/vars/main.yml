@@ -1,0 +1,3 @@
+---
+# vars file for td-agent
+td_agent_version: 3
