@@ -10,7 +10,6 @@ jobs:
           name: build
           command: |
             docker-compose up -d
-            ansible-galaxy install -r roles.yml -p roles/galaxy
             ansible-playbook site.yml -i docker -c docker
             ansible-playbook site.yml -i docker -c docker
 workflows:
