@@ -10,8 +10,8 @@ jobs:
           name: build
           command: |
             docker-compose up -d
-            ansible-playbook site.yml -i docker -c docker
-            ansible-playbook site.yml -i docker -c docker
+            ansible-playbook site.yml -i inventories/local/hosts -c docker
+            ansible-playbook site.yml -i inventories/local/hosts -c docker
 workflows:
   version: 2
   build_and_test:
