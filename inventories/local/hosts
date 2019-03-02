@@ -1,0 +1,5 @@
+webserver ansible_host=webserver
+dbserver ansible_hosts=dbserver
+
+[all:vars]
+env=local

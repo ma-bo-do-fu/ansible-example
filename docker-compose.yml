@@ -1,0 +1,15 @@
+version: "3"
+services:
+  webserver:
+    image: centos:6.8
+    container_name: webserver
+    tty: true
+    privileged: true
+
+  database:
+    image: centos:6.8
+    ports:
+      - "8080:80"
+    container_name: database
+    tty: true
+    privileged: true
