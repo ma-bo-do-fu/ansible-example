@@ -18,11 +18,9 @@
     tags: limits
 
   - name: Copy td.repo
-    vars:
-      td_agent_version: 3
     template:
-      src: ../template/td.repo.j2
-      dest: /etc/yum.repos.d/
+      src: td.repo.j2
+      dest: /etc/yum.repos.d/td.repo
     tags: install
 
   - name: Install td-agent from rpm Repo
