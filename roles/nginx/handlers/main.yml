@@ -5,6 +5,6 @@
   changed_when: false
 
 - name: reload nginx
-  service: 
+  service:
     name: nginx
     state: reloaded
