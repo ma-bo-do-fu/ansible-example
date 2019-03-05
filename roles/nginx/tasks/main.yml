@@ -1,0 +1,30 @@
+---
+# tasks file for roles/nginx
+- name: Enable nginx repo.
+  template:
+    src: nginx.repo.j2
+    dest: /etc/yum.repos.d/nginx.repo
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Ensure nginx is installed.
+  yum:
+    name: nginx
+    state: present
+
+# Nginx setup.
+- name: Copy nginx configuration in place.
+  template:
+    src: "{{ env }}.nginx.conf.j2"
+    dest: "{{ nginx_conf_file_path }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload nginx
+
+- name: Ensure nginx is started and enabled to start at boot.
+  service:
+    name: nginx
+    state: started
+    enabled: yes

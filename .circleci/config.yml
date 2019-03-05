@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: wptfqp/cci-ansible-testinfra
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: build
+          command: |
+            docker-compose up -d
+            ansible-playbook site.yml -i inventories/local/hosts -c docker
+            ansible-playbook site.yml -i inventories/local/hosts -c docker
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
