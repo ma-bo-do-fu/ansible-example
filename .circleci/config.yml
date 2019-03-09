@@ -1,3 +1,32 @@
+references:
+  commands:
+    build_webserver: &build_webserver
+      name: build webserver
+      command: |
+        docker-compose up -d
+        ansible-playbook site.yml -i inventories/local/hosts -l webserver -c docker
+        ansible-playbook site.yml -i inventories/local/hosts -l webserver -c docker
+    build_database: &build_database
+      name: build database
+      command: |
+        docker-compose up -d
+        ansible-playbook site.yml -i inventories/local/hosts -l database -c docker
+        ansible-playbook site.yml -i inventories/local/hosts -l database -c docker
+    push_webserver: &push_webserver
+      name: push webserver
+      command: |
+        eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+        docker commit webserver webserver:latest
+        docker tag webserver:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/webserver:latest
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/webserver:latest
+    push_database: &push_database
+      name: push database
+      command: |
+        eval $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+        docker commit database database:latest
+        docker tag database:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/database:latest
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/database:latest
+
 version: 2
 jobs:
   build:
@@ -7,16 +36,16 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: build
-          command: |
-            docker-compose up -d
-            ansible-playbook site.yml -i inventories/local/hosts -c docker
-            ansible-playbook site.yml -i inventories/local/hosts -c docker
+          name: generate vault password file
+          command: echo $VAUT_PASS >> vault_password_file
+      - run: *build_webserver
+      - run: *push_webserver
+
 workflows:
   version: 2
-  build_and_test:
+  build_webserver:
     jobs:
-      - build
+      - build_webserver
   nightly:
     triggers:
       - schedule:
@@ -26,4 +55,4 @@ workflows:
               only:
                 - master
     jobs:
-      - build
+      - build_webserver
