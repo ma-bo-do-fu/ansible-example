@@ -31,7 +31,7 @@ version: 2
 jobs:
   build_and_push_webserver:
     docker:
-      - image: wptfqp/cci-ansible-testinfra
+      - image: wptfqp/ansible-ci-image
     steps:
       - checkout
       - setup_remote_docker
