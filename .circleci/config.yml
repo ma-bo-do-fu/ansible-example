@@ -29,7 +29,7 @@ references:
 
 version: 2
 jobs:
-  build:
+  build_and_push_webserver:
     docker:
       - image: wptfqp/cci-ansible-testinfra
     steps:
@@ -45,7 +45,7 @@ workflows:
   version: 2
   build_webserver:
     jobs:
-      - build_webserver
+      - build_and_push_webserver
   nightly:
     triggers:
       - schedule:
