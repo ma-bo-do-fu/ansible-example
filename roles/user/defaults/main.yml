@@ -1,4 +1,0 @@
----
-# defaults file for roles/user
-user: foo
-group: foo
