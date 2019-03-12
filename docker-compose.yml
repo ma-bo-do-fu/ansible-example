@@ -1,13 +1,13 @@
 version: "3"
 services:
   webserver:
-    image: centos:6.8
+    build: .
     container_name: webserver
     tty: true
     privileged: true
 
   database:
-    image: centos:6.8
+    build: .
     ports:
       - "8080:80"
     container_name: database
