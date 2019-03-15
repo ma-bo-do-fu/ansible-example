@@ -1,1 +1,5 @@
 ansible_become_pass: xxx
+ip_lists:
+  - xxx.xxx.xxx.xxx
+  - yyy.yyy.yyy.yyy
+env: local

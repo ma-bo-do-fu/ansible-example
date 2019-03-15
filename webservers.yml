@@ -1,3 +1,14 @@
 - hosts: webserver
+  pre_tasks:
+    - name: confirm production
+      pause: 
+        prompt: "本番環境です。このまま進めてよろしいですか？ (y/n)"
+      register: yn
+      when: ansible_all_ipv4_addresses | intersect(ip_lists)
+    - name: abort
+      fail: 
+        msg: "作業を中断しました"
+      when: yn.user_input is defined and
+            yn.user_input != "y" 
   roles:
     - nginx
